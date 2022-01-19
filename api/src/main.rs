@@ -10,19 +10,18 @@ use tokio::sync::Mutex;
 async fn main() -> Result<(), Box<dyn Error>> {
     let mut args = args();
     args.next();
-    let lamp = Lamp(args.next().ok_or("missing lamp endpoint")?);
-
     let app = Router::new()
         .route("/off", any(off))
         .route("/on", any(on))
-        .layer(AddExtensionLayer::new(lamp))
+        .layer(AddExtensionLayer::new(Lamp(
+            args.next().ok_or("missing lamp endpoint")?,
+        )))
         .layer(AddExtensionLayer::new(Arc::new(Mutex::new(
             Instant::now() - Duration::from_secs(60 * 60),
         ))));
     Server::bind(&SocketAddr::from(([127, 0, 0, 1], 3000)))
         .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .await?;
     Ok(())
 }
 
