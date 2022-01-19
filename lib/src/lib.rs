@@ -36,15 +36,18 @@ pub struct Lamp(pub String);
 
 impl Lamp {
     pub async fn set_state(&self, state: State) -> Result<(), Error> {
-        let mut rng = rand::thread_rng();
-        let message_id = (0..32)
-            .map(|_| {
-                ('0'..='9')
-                    .chain('a'..='f')
-                    .choose(&mut rng)
-                    .ok_or(Error::MessageIdGenerationFailure)
-            })
-            .collect::<Result<String, _>>()?;
+        let message_id = {
+            let mut rng = rand::thread_rng();
+            (0..32)
+                .map(|_| {
+                    ('0'..='9')
+                        .chain('a'..='f')
+                        .choose(&mut rng)
+                        .ok_or(Error::MessageIdGenerationFailure)
+                })
+                .collect::<Result<String, _>>()?
+        };
+
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|err| Error::TimestampGenerationFailure { source: err })?
