@@ -68,10 +68,11 @@ impl Lamp {
                     "onoff": u8::from(state)
                 }
             }
-        });
+        })
+        .to_string();
         reqwest::Client::new()
             .post(&format!("{}/config", self.0))
-            .json(&payload)
+            .body(payload)
             .send()
             .await
             .map_err(|err| Error::HttpCallFailure { source: err })?;
