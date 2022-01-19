@@ -49,7 +49,6 @@ impl Lamp {
             .duration_since(UNIX_EPOCH)
             .map_err(|err| Error::TimestampGenerationFailure { source: err })?
             .as_secs();
-        let client = reqwest::Client::new();
         let payload = json!({
             "header":{
                 "messageId": message_id,
@@ -67,7 +66,7 @@ impl Lamp {
                 }
             }
         });
-        client
+        reqwest::Client::new()
             .post(&format!("{}/config", self.0))
             .json(&payload)
             .send()
