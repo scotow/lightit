@@ -1,6 +1,7 @@
 use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 
 use rand::seq::IteratorRandom;
+use reqwest::StatusCode;
 use serde_json::json;
 use thiserror::Error;
 
@@ -11,13 +12,13 @@ pub enum State {
 }
 
 impl TryFrom<&str> for State {
-    type Error = ();
+    type Error = Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value.to_ascii_lowercase().as_str() {
             "off" => Ok(Self::Off),
             "on" => Ok(Self::On),
-            _ => Err(()),
+            _ => Err(Error::InvalidState),
         }
     }
 }
@@ -70,22 +71,31 @@ impl Lamp {
             }
         })
         .to_string();
-        reqwest::Client::new()
+        let response = reqwest::Client::new()
             .post(&format!("{}/config", self.0))
             .body(payload)
             .send()
             .await
             .map_err(|err| Error::HttpCallFailure { source: err })?;
+        if response.status() != StatusCode::OK {
+            return Err(Error::InvalidStatusCode {
+                code: response.status(),
+            });
+        }
         Ok(())
     }
 }
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("invalid state")]
+    InvalidState,
     #[error("cannot generate message id")]
     MessageIdGenerationFailure,
     #[error("cannot generate unix timestamp")]
     TimestampGenerationFailure { source: SystemTimeError },
     #[error("invalid api http status code")]
     HttpCallFailure { source: reqwest::Error },
+    #[error("invalid status code")]
+    InvalidStatusCode { code: StatusCode },
 }
