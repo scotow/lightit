@@ -1,0 +1,10 @@
+[package]
+name = "lightit-sunrise-sunset"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lightit = { path = "../lib" }
+tokio = { version = "1.15.0", features = ["macros"] }
+sunrise = "1.0.0"
+chrono = "0.4.19"
