@@ -19,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .layer(AddExtensionLayer::new(Arc::new(Mutex::new(
             Instant::now() - Duration::from_secs(60 * 60),
         ))));
-    Server::bind(&SocketAddr::from(([127, 0, 0, 1], 3000)))
+    Server::bind(&SocketAddr::from(([0, 0, 0, 0], 8080)))
         .serve(app.into_make_service())
         .await?;
     Ok(())
