@@ -5,7 +5,7 @@ use reqwest::StatusCode;
 use serde_json::json;
 use thiserror::Error;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum State {
     Off,
     On,
