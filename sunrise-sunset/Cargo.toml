@@ -5,6 +5,6 @@ edition = "2021"
 
 [dependencies]
 lightit = { path = "../lib" }
-tokio = { version = "1.15.0", features = ["macros"] }
+tokio = { version = "1.15.0", features = ["macros", "time"] }
 sunrise = "1.0.0"
 chrono = "0.4.19"
