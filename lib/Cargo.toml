@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 tokio = "1.15.0"
-reqwest = "0.11.9"
+reqwest = { version = "0.11.9", default-features = false, features = ["rustls-tls"] }
 serde_json = "1.0.75"
 rand = "0.8.4"
 thiserror = "1.0.30"
