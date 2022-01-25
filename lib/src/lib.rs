@@ -1,4 +1,7 @@
-use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
+use std::{
+    str::FromStr,
+    time::{SystemTime, SystemTimeError, UNIX_EPOCH},
+};
 
 use rand::seq::IteratorRandom;
 use reqwest::StatusCode;
@@ -11,13 +14,13 @@ pub enum State {
     On,
 }
 
-impl TryFrom<&str> for State {
-    type Error = Error;
+impl FromStr for State {
+    type Err = Error;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value.to_ascii_lowercase().as_str() {
-            "off" => Ok(Self::Off),
-            "on" => Ok(Self::On),
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().as_str() {
+            "off" | "0" => Ok(Self::Off),
+            "on" | "1" => Ok(Self::On),
             _ => Err(Error::InvalidState),
         }
     }

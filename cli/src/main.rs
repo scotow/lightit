@@ -10,8 +10,7 @@ async fn main() -> Result<(), Box<dyn Error + 'static>> {
     let state = args
         .next()
         .ok_or("missing target state")?
-        .as_str()
-        .try_into()
+        .parse()
         .map_err(|_| "invalid lamp state")?;
     let lamp = Lamp(lamp);
     lamp.set_state(state).await?;
