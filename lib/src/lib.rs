@@ -96,6 +96,6 @@ pub enum Error {
     TimestampGenerationFailure { source: SystemTimeError },
     #[error("invalid api http status code")]
     HttpCallFailure { source: reqwest::Error },
-    #[error("invalid status code")]
+    #[error("invalid status code {code}")]
     InvalidStatusCode { code: StatusCode },
 }
