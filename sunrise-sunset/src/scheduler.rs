@@ -7,13 +7,11 @@ pub struct Scheduler {
     pub longitude: f64,
     pub offset: i64,
     pub weekdays: Vec<Weekday>,
-    pub fixed_off: Option<u32>,
+    pub fixed_off: Vec<u32>,
 }
 
-impl Iterator for Scheduler {
-    type Item = (StdDuration, State);
-
-    fn next(&mut self) -> Option<Self::Item> {
+impl Scheduler {
+    pub fn next(&self) -> Option<(StdDuration, State)> {
         let now: DateTime<Local> = Local::now();
         (0..)
             .map(|day| now + Duration::days(day))
@@ -31,9 +29,9 @@ impl Iterator for Scheduler {
                     (sunrise + self.offset * 60, State::Off),
                     (sunset - self.offset * 60, State::On),
                 ];
-                if let Some(fixed_off) = self.fixed_off {
+                for &off_hour in self.fixed_off.iter() {
                     points.push((
-                        date_time.date().and_hms(fixed_off, 0, 0).timestamp(),
+                        date_time.date().and_hms(off_hour, 0, 0).timestamp(),
                         State::Off,
                     ));
                 }
