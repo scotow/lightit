@@ -9,12 +9,20 @@ use tokio::time::sleep;
 mod options;
 mod scheduler;
 
+macro_rules! verbose {
+    ($opt: expr, $($arg : tt) *) => {
+        if $opt.verbose {
+            eprintln!($($arg)*);
+        }
+    }
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn Error + 'static>> {
     let options = Options::parse();
     let lamp = Lamp(options.endpoint);
 
-    let mut scheduler = Scheduler {
+    let scheduler = Scheduler {
         latitude: options.latitude,
         longitude: options.longitude,
         offset: options.offset,
@@ -23,13 +31,21 @@ async fn main() -> Result<(), Box<dyn Error + 'static>> {
     };
     loop {
         if let Some((duration, state)) = scheduler.next() {
+            verbose!(
+                options,
+                "waiting {:?} before changing state to {:?}",
+                duration,
+                state
+            );
             sleep(duration).await;
             if let Err(err) = lamp.set_state(state).await {
-                eprintln!("{}", err.to_string());
+                verbose!(options, "failed to change lamp state: {}", err.to_string());
+            } else {
+                verbose!(options, "state changed to {:?}", state);
             }
         } else {
-            eprintln!("cannot determine next state change");
-            sleep(Duration::from_secs(5 * 60)).await;
+            verbose!(options, "cannot determine next state change");
+            sleep(Duration::from_secs(60 * 5)).await;
         }
     }
 }
