@@ -29,5 +29,12 @@ impl FromStr for Weekdays {
             .map(|p| p.parse().map_err(|err| format!("{:?}", err)))
             .collect::<Result<_, _>>()
             .map(|ws| Weekdays(ws))
+            .and_then(|ws| {
+                if ws.0.is_empty() {
+                    Err("invalid empty week days".to_owned())
+                } else {
+                    Ok(ws)
+                }
+            })
     }
 }
