@@ -15,7 +15,7 @@ impl Iterator for Scheduler {
 
     fn next(&mut self) -> Option<Self::Item> {
         let now: DateTime<Local> = Local::now();
-        let mut points = (0..)
+        (0..)
             .map(|day| now + Duration::days(day))
             .filter(|day| self.weekdays.contains(&day.weekday()))
             .take(2)
@@ -37,12 +37,9 @@ impl Iterator for Scheduler {
                         State::Off,
                     ));
                 }
+                points.sort_by_key(|&(ut, _)| ut);
                 points
             })
-            .collect::<Vec<_>>();
-        points.sort_by_key(|&(ut, _)| ut);
-        points
-            .into_iter()
             .find(|&(ut, _)| ut > now.timestamp())
             .map(|(ut, s)| (StdDuration::from_secs((ut - now.timestamp()) as u64), s))
     }
