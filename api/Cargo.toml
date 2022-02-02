@@ -1,9 +1,10 @@
 [package]
 name = "lightit-api"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
 lightit = { path = "../lib" }
 tokio = { version = "1.15.0", features = ["macros", "sync"] }
 axum = "0.4.4"
+clap = { version = "3.0.13", features = ["derive"] }
